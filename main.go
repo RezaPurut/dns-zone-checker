@@ -11,8 +11,7 @@ import (
 	"strings"
 	"time"
 	
-	"golang.org/x/crypto/ssh"
-	
+	"golang.org/x/crypto/ssh"	
 )
 
 func main() {
@@ -31,8 +30,6 @@ func main() {
 	var single_file string
 
 	var bulk_check bool
-  
-  
   
 	flag.StringVar(&dns_file, "dns-file", "", "DNS configuration file")
 	flag.StringVar(&zone_dir, "zone-dir", "", "Zone file directory")
