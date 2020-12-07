@@ -54,5 +54,36 @@ func main() {
 	port_list := strings.Split(target_port, ",")
   
 	fmt.Println("Login to Bastion Host...")
+	bastionConn, err := sshConnect(bast_addr, bast_user, bast_pass, bast_key, bast_port)
+	
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		if bulk_check {
+			target_list := difference(getFileName(zone_dir), readFnameInConfig(zone_dir, dns_file))
+
+			fmt.Println(target_list)
+		}
+	}
   
+}
+
+// function to check error	
+func check(err error) {
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
+func PublicKey(file string) ssh.AuthMethod {
+	buff, err := ioutil.ReadFile(file)
+
+	check(err)
+
+	key, err := ssh.ParsePrivateKey(buff)
+
+	check(err)
+
+	return ssh.PublicKeys(key)
 }
