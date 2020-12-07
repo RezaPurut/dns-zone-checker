@@ -87,3 +87,25 @@ func PublicKey(file string) ssh.AuthMethod {
 
 	return ssh.PublicKeys(key)
 }
+
+func sshConfig(username, pass, key_path string) *ssh.ClientConfig{
+	config := &ssh.ClientConfig {
+		User: username,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(pass),
+			PublicKey(key_path),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout: 5 * time.Second,
+	}
+
+	return config
+}
+
+func sshConnect(server, username, pass, key_path, port string) (*ssh.Client, error) {
+	config := sshConfig(username, pass, key_path)
+
+	connection, err := ssh.Dial("tcp", server + ":" + port, config)
+	
+	return connection, err
+}
