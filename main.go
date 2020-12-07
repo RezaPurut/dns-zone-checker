@@ -91,16 +91,28 @@ func PublicKey(file string) ssh.AuthMethod {
 }
 
 func sshConfig(username, pass, key_path string) *ssh.ClientConfig{
-	config := &ssh.ClientConfig {
-		User: username,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(pass),
-			PublicKey(key_path),
-		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		Timeout: 5 * time.Second,
+	var config *ssh.ClientConfig
+	if key_path != "" {
+		config = &ssh.ClientConfig {
+			User: username,
+			Auth: []ssh.AuthMethod{
+				ssh.Password(pass),
+				PublicKey(key_path),
+			},
+			HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+			Timeout: 5 * time.Second,
+		}
+	} else {
+		config = &ssh.ClientConfig {
+			User: username,
+			Auth: []ssh.AuthMethod{
+				ssh.Password(pass),
+			},
+			HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+			Timeout: 5 * time.Second,
+		}
 	}
-
+	
 	return config
 }
 
