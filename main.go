@@ -16,20 +16,22 @@ import (
 
 func main() {
 
-	var dns_file string
-	var zone_dir string
-	var bast_addr string
-	var bast_user string
-	var bast_pass string
-	var bast_port string
-	var bast_key string
-	var target_user string
-	var target_pass string
-	var target_port string
-	var target_key string
-	var single_file string
-
-	var bulk_check bool
+	var (
+		dns_file string
+		zone_dir string
+		bast_addr string
+		bast_user string
+		bast_pass string
+		bast_port string
+		bast_key string
+		target_user string
+		target_pass string
+		target_port string
+		target_key string
+		single_file string
+		
+		bulk_check bool
+	)
   
 	flag.StringVar(&dns_file, "dns-file", "", "DNS configuration file")
 	flag.StringVar(&zone_dir, "zone-dir", "", "Zone file directory")
