@@ -123,3 +123,25 @@ func sshConnect(server, username, pass, key_path, port string) (*ssh.Client, err
 	
 	return connection, err
 }
+
+
+func sshSession(conn *ssh.Client){
+	session, err := conn.NewSession()
+
+	check(err)
+
+	defer session.Close()
+
+	sessStdOut, err := session.StdoutPipe()
+	check(err)
+	go io.Copy(os.Stdout, sessStdOut)
+
+	sessStderr, err := session.StderrPipe()
+	check(err)
+	go io.Copy(os.Stderr, sessStderr)
+
+	err = session.Run("ls -la")
+
+}
+
+
