@@ -179,3 +179,17 @@ func readFnameInConfig(zone_dir, dns_file string) []string {
 	
 	return a
 }
+
+func getFileName(zone_dir string) <-chan string {
+	ch := make(chan string)
+	f, err := ioutil.ReadDir(zone_dir)
+	check(err)
+
+	go func() {
+		for _, file := range f {
+			ch <- file.Name()
+		}
+		close(ch)
+	}()
+	return ch
+}
