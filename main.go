@@ -125,7 +125,7 @@ func sshConnect(server, username, pass, key_path, port string) (*ssh.Client, err
 }
 
 
-func sshSession(conn *ssh.Client){
+func sshSession(conn *ssh.Client) {
 	session, err := conn.NewSession()
 
 	check(err)
@@ -144,4 +144,39 @@ func sshSession(conn *ssh.Client){
 
 }
 
+// This function read the .conf file record line by line 
+// using regex to search for zones directory keyword until 
+// it finds a double quote ("). Then the search result is 
+// cleaned by removing the duplicated file name.
+func readFnameInConfig(zone_dir, dns_file string) []string {
+	f, err := os.Open(dns_file)
+	check(err)
 
+	defer f.Close()
+
+	keyword := strings.Split(zone_dir, "/")
+
+	scanner := bufio.NewScanner(f)
+
+	var m = make(map[string]bool)
+	var a = []string{}
+
+	// if user set zone_dir end with '/'
+	if keyword[len(keyword)-1] == "" {
+		keyword[len(keyword)-1] = keyword[len(keyword)-2]
+	}
+
+	r := regexp.MustCompile(keyword[len(keyword)-1] + "/(.*?)\"")
+	for scanner.Scan() {
+		fname := r.FindAllStringSubmatch(scanner.Text(), -1)
+		for _, v := range fname {
+			s := string(v[1])
+			if m[s] != true {
+				a = append(a, s)
+				m[s] = true
+			}
+		}
+	}
+	
+	return a
+}
