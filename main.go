@@ -124,7 +124,6 @@ func sshConnect(server, username, pass, key_path, port string) (*ssh.Client, err
 	return connection, err
 }
 
-
 func sshSession(conn *ssh.Client) {
 	session, err := conn.NewSession()
 
