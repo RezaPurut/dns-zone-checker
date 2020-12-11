@@ -193,3 +193,19 @@ func getFileName(zone_dir string) <-chan string {
 	}()
 	return ch
 }
+
+func difference(a<-chan string, b []string) []string {
+	mb := make(map[string]struct{}, len(b))
+	for _, i := range b {
+		mb[i] = struct{}{}
+	}
+
+	var diff []string
+	for i := range a {
+		if _, found := mb[i]; !found {
+			diff = append(diff, i)
+		}
+	}
+
+	return diff
+}
