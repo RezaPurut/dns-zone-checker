@@ -209,3 +209,21 @@ func difference(a<-chan string, b []string) []string {
 
 	return diff
 }
+
+func readFile(zone_dir, fn string) string {
+	f, err := os.Open(zone_dir + fn)
+
+	check(err)
+
+	defer f.Close()
+
+	buf := make([]byte, 451)
+	n, err := f.Read(buf)
+
+	check(err)
+
+	ip_string := strings.Join(parseString(string(buf[:n])), "")
+
+	return ip_string
+
+}
