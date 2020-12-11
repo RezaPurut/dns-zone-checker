@@ -227,3 +227,14 @@ func readFile(zone_dir, fn string) string {
 	return ip_string
 
 }
+
+// This function reads ip address in the zones/db file
+// use regex to read it
+func parseString(buf string) []string {
+	r, _ := regexp.Compile("\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.)" +
+	"{3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b")
+
+	ip_string := r.FindStringSubmatch(buf)
+
+	return ip_string
+}
