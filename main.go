@@ -73,7 +73,12 @@ func main() {
 				for j := range port_list {
 					fmt.Printf("Trying port %s\n", port_list[j])
 					
-					for k := range pass_list {}
+					for k := range pass_list {
+						// make new bastionConn every loop (if not, will get error handshake failed)
+						conn, err := bastionConn.Dial("tcp", target_addr + ":" + port_list[j])
+
+						fmt.Printf("Trying password %s\n", pass_list[k])
+					}
 				}
 			}
 		}
