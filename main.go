@@ -78,6 +78,12 @@ func main() {
 						conn, err := bastionConn.Dial("tcp", target_addr + ":" + port_list[j])
 
 						fmt.Printf("Trying password %s\n", pass_list[k])
+						if err != nil {
+							fmt.Println("Connection from Bastion Failed: ", err)
+						} else {
+							config := sshConfig(target_user, pass_list[k], target_key)
+							ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + port_list[j], config)
+						}
 					}
 				}
 			}
