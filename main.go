@@ -64,7 +64,6 @@ func main() {
 		if bulk_check {
 			target_list := difference(getFileName(zone_dir), readFnameInConfig(zone_dir, dns_file))
 
-			fmt.Println(target_list)
 			for i := range target_list {
 				target_addr := readFile(zone_dir, target_list[i])
 				fmt.Printf("Checking file %s\n", target_list[i])
