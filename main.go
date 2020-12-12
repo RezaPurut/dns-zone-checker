@@ -65,6 +65,17 @@ func main() {
 			target_list := difference(getFileName(zone_dir), readFnameInConfig(zone_dir, dns_file))
 
 			fmt.Println(target_list)
+			for i := range target_list {
+				target_addr := readFile(zone_dir, target_list[i])
+				fmt.Printf("Checking file %s\n", target_list[i])
+				
+				fmt.Printf("SSHing on %s\n", target_addr)
+				for j := range port_list {
+					fmt.Printf("Trying port %s\n", port_list[j])
+					
+					for k := range pass_list {}
+				}
+			}
 		}
 	}
   
