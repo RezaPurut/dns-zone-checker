@@ -1,5 +1,5 @@
 package main
-
+// TODO: commennt function, add logging, set successful output
 import (
 	"fmt"
 	"flag"
@@ -32,7 +32,7 @@ func main() {
 		
 		bulk_check bool
 	)
-  
+
 	flag.StringVar(&dns_file, "dns-file", "", "DNS configuration file")
 	flag.StringVar(&zone_dir, "zone-dir", "", "Zone file directory")
 
@@ -54,7 +54,7 @@ func main() {
 
 	pass_list := strings.Split(target_pass, ",")
 	port_list := strings.Split(target_port, ",")
-  
+
 	fmt.Println("Login to Bastion Host...")
 	bastionConn, err := sshConnect(bast_addr, bast_user, bast_pass, bast_key, bast_port)
 	
@@ -70,9 +70,10 @@ func main() {
 				fmt.Printf("Checking file %s\n", target_list[i])
 				
 				fmt.Printf("SSHing on %s\n", target_addr)
+
 				for j := range port_list {
 					fmt.Printf("Trying port %s\n", port_list[j])
-					
+
 					for k := range pass_list {
 						// make new bastionConn every loop (if not, will get error handshake failed)
 						conn, err := bastionConn.Dial("tcp", target_addr + ":" + port_list[j])
@@ -81,15 +82,55 @@ func main() {
 						if err != nil {
 							fmt.Println("Connection from Bastion Failed: ", err)
 						} else {
+							
 							config := sshConfig(target_user, pass_list[k], target_key)
 							ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + port_list[j], config)
+								
+							if err != nil {
+								fmt.Println("newClientConn error: ", err)
+							} else {
+								destClient := ssh.NewClient(ncc, chans, reqs)
+								sshSession(destClient)
+									
+							}
 						}
 					}
+
 				}
+			}
+		} else {
+			fmt.Println("Reading File...")
+			target_addr := readFile(zone_dir, single_file)
+			fmt.Printf("SSHing on %s\n", target_addr)
+
+			for i := range port_list {
+				fmt.Printf("Trying port %s\n", port_list[i])
+
+				for j := range pass_list {
+					// make new bastionConn every loop (if not, will get error handshake failed)
+					conn, err := bastionConn.Dial("tcp", target_addr + ":" + port_list[i])
+					
+					fmt.Printf("Trying password %s\n", pass_list[j])
+					if err != nil {
+						fmt.Println("Connection from Bastion Failed: ", err)
+					} else {
+						config := sshConfig(target_user, pass_list[j], target_key)
+						ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + port_list[i], config)
+
+						if err != nil {
+							fmt.Println("newClientConn error: ", err)
+						} else {
+							destClient := ssh.NewClient(ncc, chans, reqs)
+							sshSession(destClient)
+								
+						}
+					}
+
+				}
+
 			}
 		}
 	}
-  
 }
 
 // function to check error	
@@ -165,6 +206,34 @@ func sshSession(conn *ssh.Client) {
 
 }
 
+func readConfig() chan string {
+	ch := make(chan string)
+	
+	// wg.Add(1)
+	go func() {
+		f, err := os.Open("/home/reza/Downloads/prod_zones.conf")
+	    check(err)
+
+	    defer f.Close()
+		// defer wg.Done()
+		scanner := bufio.NewScanner(f)
+		
+		r := regexp.MustCompile("zones/(.*?)\"")
+	    for scanner.Scan() {	
+		
+		    fname := r.FindAllStringSubmatch(scanner.Text(), -1)
+		    for _, v := range fname {
+				ch <- string(v[1])
+			}
+			
+		}
+		close(ch)
+	}()
+
+	return ch		
+	
+}
+ 
 // This function read the .conf file record line by line 
 // using regex to search for zones directory keyword until 
 // it finds a double quote ("). Then the search result is 
@@ -194,14 +263,14 @@ func readFnameInConfig(zone_dir, dns_file string) []string {
 			s := string(v[1])
 			if m[s] != true {
 				a = append(a, s)
-				m[s] = true
+				m[s] = true			
 			}
 		}
 	}
-	
+
 	return a
 }
-
+	
 func getFileName(zone_dir string) <-chan string {
 	ch := make(chan string)
 	f, err := ioutil.ReadDir(zone_dir)
