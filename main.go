@@ -72,8 +72,6 @@ func main() {
 				fmt.Printf("SSHing on %s\n", target_addr)
 
 				attemptConnect(bastionConn, port_list, pass_list, target_user, target_key, target_addr)
-
-				
 			}
 		} else {
 			fmt.Println("Reading File...")
@@ -114,8 +112,7 @@ func attemptConnect(bastionConn *ssh.Client, port_list, pass_list []string, targ
 					fmt.Println("newClientConn error: ", err)
 				} else {
 					destClient := ssh.NewClient(ncc, chans, reqs)
-					sshSession(destClient)
-						
+					sshSession(destClient)		
 				}
 			}
 		}
@@ -185,7 +182,6 @@ func sshSession(conn *ssh.Client) {
 	go io.Copy(os.Stderr, sessStderr)
 
 	err = session.Run("ls -la")
-
 }
  
 // This function read the .conf file record line by line 
