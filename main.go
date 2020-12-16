@@ -204,34 +204,6 @@ func sshSession(conn *ssh.Client) {
 	err = session.Run("ls -la")
 
 }
-
-func readConfig() chan string {
-	ch := make(chan string)
-	
-	// wg.Add(1)
-	go func() {
-		f, err := os.Open("/home/reza/Downloads/prod_zones.conf")
-	    check(err)
-
-	    defer f.Close()
-		// defer wg.Done()
-		scanner := bufio.NewScanner(f)
-		
-		r := regexp.MustCompile("zones/(.*?)\"")
-	    for scanner.Scan() {	
-		
-		    fname := r.FindAllStringSubmatch(scanner.Text(), -1)
-		    for _, v := range fname {
-				ch <- string(v[1])
-			}
-			
-		}
-		close(ch)
-	}()
-
-	return ch		
-	
-}
  
 // This function read the .conf file record line by line 
 // using regex to search for zones directory keyword until 
