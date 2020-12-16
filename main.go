@@ -64,70 +64,23 @@ func main() {
 		if bulk_check {
 			target_list := difference(getFileName(zone_dir), readFnameInConfig(zone_dir, dns_file))
 
+			fmt.Println(target_list)
 			for i := range target_list {
 				target_addr := readFile(zone_dir, target_list[i])
 				fmt.Printf("Checking file %s\n", target_list[i])
 				
 				fmt.Printf("SSHing on %s\n", target_addr)
 
-				for j := range port_list {
-					fmt.Printf("Trying port %s\n", port_list[j])
+				attemptConnect(bastionConn, port_list, pass_list, target_user, target_key, target_addr)
 
-					for k := range pass_list {
-						// make new bastionConn every loop (if not, will get error handshake failed)
-						conn, err := bastionConn.Dial("tcp", target_addr + ":" + port_list[j])
-
-						fmt.Printf("Trying password %s\n", pass_list[k])
-						if err != nil {
-							fmt.Println("Connection from Bastion Failed: ", err)
-						} else {
-							
-							config := sshConfig(target_user, pass_list[k], target_key)
-							ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + port_list[j], config)
-								
-							if err != nil {
-								fmt.Println("newClientConn error: ", err)
-							} else {
-								destClient := ssh.NewClient(ncc, chans, reqs)
-								sshSession(destClient)
-									
-							}
-						}
-					}
-
-				}
+				
 			}
 		} else {
 			fmt.Println("Reading File...")
 			target_addr := readFile(zone_dir, single_file)
 			fmt.Printf("SSHing on %s\n", target_addr)
 
-			for i := range port_list {
-				fmt.Printf("Trying port %s\n", port_list[i])
-
-				for j := range pass_list {
-					// make new bastionConn every loop (if not, will get error handshake failed)
-					conn, err := bastionConn.Dial("tcp", target_addr + ":" + port_list[i])
-					
-					fmt.Printf("Trying password %s\n", pass_list[j])
-					if err != nil {
-						fmt.Println("Connection from Bastion Failed: ", err)
-					} else {
-						config := sshConfig(target_user, pass_list[j], target_key)
-						ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + port_list[i], config)
-
-						if err != nil {
-							fmt.Println("newClientConn error: ", err)
-						} else {
-							destClient := ssh.NewClient(ncc, chans, reqs)
-							sshSession(destClient)
-								
-						}
-					}
-
-				}
-
-			}
+			attemptConnect(bastionConn, port_list, pass_list, target_user, target_key, target_addr)
 		}
 	}
 }
@@ -137,6 +90,36 @@ func check(err error) {
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+}
+
+func attemptConnect(bastionConn *ssh.Client, port_list, pass_list []string, target_user, target_key, target_addr string) {
+	
+	for j := range port_list {
+		fmt.Printf("Trying port %s\n", port_list[j])
+
+		for k := range pass_list {
+			// make new bastionConn every loop (if not, will get error handshake failed)
+			conn, err := bastionConn.Dial("tcp", target_addr + ":" + port_list[j])
+
+			fmt.Printf("Trying password %s\n", pass_list[k])
+			if err != nil {
+				fmt.Println("Connection from Bastion Failed: ", err)
+			} else {
+				
+				config := sshConfig(target_user, pass_list[k], target_key)
+				ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + port_list[j], config)
+					
+				if err != nil {
+					fmt.Println("newClientConn error: ", err)
+				} else {
+					destClient := ssh.NewClient(ncc, chans, reqs)
+					sshSession(destClient)
+						
+				}
+			}
+		}
+
 	}
 }
 
