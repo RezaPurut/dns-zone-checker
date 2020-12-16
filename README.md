@@ -9,3 +9,8 @@ Simple tool to read DNS forward zone file, compare it with DNS config file and s
                        ----------         -------------        -------------------
 ```
 ## Usage
+As binary:
+```
+./checker [flags]
+```
+### Options
