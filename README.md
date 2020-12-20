@@ -24,5 +24,5 @@ As binary:
 --bastion-pass string      Password for the user to connect to bastion server
 --bastion-port string      Port to connect to bastion server
 --target-user string       Username to connect to target server
---target-pass string       Password for the target-user to connect to target server. Can provide multiple values separated by comma (eg. "password,pass,abc"). It                              will try the provided password one by one to connect to the target server
+--target-pass string       Password for the target-user to connect to target server. Can provide multiple values separated by comma (eg. "password,pass,abc"). It will try the provided password one by one to connect to the target server
 ```
