@@ -14,3 +14,9 @@ As binary:
 ./checker [flags]
 ```
 ### Options
+```
+--bastion-addr string      Address or hostname of the bastion server
+--bastion-key string       SSH private key path for bastion server
+--bastion-user string      Username to connect to bastion server
+--bastion-pass string      Password for the user to connect to bastion server
+```
