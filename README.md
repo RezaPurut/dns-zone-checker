@@ -15,9 +15,12 @@ As binary:
 ```
 ### Options
 ```
+--bulk boolean             If this option is enabled, it will compare all files in zones directory with DNS configuration file
+--dns-file string          DNS configuration file to read and compare. Specify the DNS config file here (eg. named.conf, named.conf.default-zones)
 --bastion-addr string      Address or hostname of the bastion server
 --bastion-key string       SSH private key path for bastion server
 --bastion-user string      Username to connect to bastion server
 --bastion-pass string      Password for the user to connect to bastion server
 --bastion-port string      Port to connect to bastion server
 ```
+zone file=Resource Records (RR)
