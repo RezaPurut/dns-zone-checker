@@ -19,4 +19,5 @@ As binary:
 --bastion-key string       SSH private key path for bastion server
 --bastion-user string      Username to connect to bastion server
 --bastion-pass string      Password for the user to connect to bastion server
+--bastion-port string      Port to connect to bastion server
 ```
