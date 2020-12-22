@@ -15,7 +15,8 @@ As binary:
 ```
 ### Options
 ```
---bulk boolean             If this option is enabled, it will compare all files in zones directory with DNS configuration file
+--bulk boolean             If this option is enabled, it will compare all files
+                           in zones directory with DNS configuration file
 --dns-file string          DNS configuration file to read and compare. Specifies the DNS config file (eg. named.conf, named.conf.default-zones, zones.conf, etc.)
 --zone-dir string          Zone files directory. Specifies the directory that contains the zone files such as example.com.zone, db.example.com)
 --bastion-addr string      Address or hostname of the bastion server
