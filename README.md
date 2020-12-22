@@ -13,6 +13,12 @@ As binary:
 ```
 ./checker [flags]
 ```
+OR
+
+As go program:
+```
+go run main.go [flags]
+```
 ### Options
 ```
 --bulk boolean             If this option is enabled, it will compare all files in zones directory 
