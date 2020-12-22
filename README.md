@@ -42,7 +42,12 @@ go run main.go [flags]
 --target-key string        SSH private key path for target server 
 ```
 ### Example 1
-Bulk check
+Bulk check (one-liner):
+```
+./checker -bulk=true -dns-file /etc/named/zones.conf -zone-dir /etc/named/zones/ -bastion-addr jumphost.example.com -bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser -target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa
+```
+
+Bulk check (multi-line):
 ```
 ./checker -bulk=true \
 -dns-file /etc/named/zones.conf \
