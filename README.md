@@ -27,7 +27,8 @@ go run main.go [flags]
                            (eg. named.conf, named.conf.default-zones, zones.conf, etc.)
 --zone-dir string          Zone files directory. Specifies the directory that contains the zone files 
                            such as example.com.zone, db.example.com)
---single-zone string       Use this to only check one zone file
+--single-zone string       Use this only when you want to check one zone file. This is used when 
+                           bulk=false or 'bulk' is not provided
 --bastion-addr string      Address or hostname of the bastion server
 --bastion-key string       SSH private key path for bastion server
 --bastion-user string      Username to connect to bastion server
@@ -39,4 +40,11 @@ go run main.go [flags]
                            to connect to the target server
 --target-port string       SSH port for target server. Can provide multiple values separated by comma (eg. "22,2222")
 --target-key string        SSH private key path for target server 
+```
+### Example 1
+Bulk check
+```
+./checker -bulk=true -dns-file /etc/named/zones.conf -zone-dir /etc/named/zones/ -bastion-addr jumphost.example.com \
+-bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser \
+-target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa
 ```
