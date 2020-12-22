@@ -25,9 +25,11 @@ As binary:
 --bastion-key string       SSH private key path for bastion server
 --bastion-user string      Username to connect to bastion server
 --bastion-pass string      Password for the user to connect to bastion server
---bastion-port string      Port to connect to bastion server
+--bastion-port string      SSH port to connect to bastion server
 --target-user string       Username to connect to target server
 --target-pass string       Password for the target-user to connect to target server. Can provide multiple values
                            separated by comma (eg. "password,pass,abc"). It will try each of the provided password
                            to connect to the target server
+--target-port string       SSH port for target server. Can provide multiple values separated by comma (eg. "22,2222")
+--single-zone string       Use this to only check one zone file 
 ```
