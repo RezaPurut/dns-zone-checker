@@ -61,3 +61,5 @@ Bulk check (multi-line):
 -target-port="22,2222" \
 -target-key /home/targetUser/.ssh/id_rsa
 ```
+### Example 2
+single file check (one-liner):
