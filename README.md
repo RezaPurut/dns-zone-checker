@@ -1,5 +1,5 @@
 # dns-zone-checker
-Simple tool to read DNS forward zone file, compare it with DNS config file and ssh into the server. It is designed to read the file from current host/DNS server. Then, ssh into Bastion host and then ssh into target server.
+Simple tool to read DNS forward zone file, compare it with DNS config file and ssh into the server. It is designed to read the file from current host/DNS server. Then, it will use Bastion server as a jump host to ssh into target server.
 
 ```
                        ----------         -------------        -------------------
@@ -21,6 +21,7 @@ As binary:
                            (eg. named.conf, named.conf.default-zones, zones.conf, etc.)
 --zone-dir string          Zone files directory. Specifies the directory that contains the zone files 
                            such as example.com.zone, db.example.com)
+--single-zone string       Use this to only check one zone file
 --bastion-addr string      Address or hostname of the bastion server
 --bastion-key string       SSH private key path for bastion server
 --bastion-user string      Username to connect to bastion server
@@ -31,5 +32,5 @@ As binary:
                            separated by comma (eg. "password,pass,abc"). It will try each of the provided password
                            to connect to the target server
 --target-port string       SSH port for target server. Can provide multiple values separated by comma (eg. "22,2222")
---single-zone string       Use this to only check one zone file 
+--target-key string        SSH private key path for target server 
 ```
