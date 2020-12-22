@@ -44,7 +44,15 @@ go run main.go [flags]
 ### Example 1
 Bulk check
 ```
-./checker -bulk=true -dns-file /etc/named/zones.conf -zone-dir /etc/named/zones/ -bastion-addr jumphost.example.com \
--bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser \
--target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa
+./checker -bulk=true \
+-dns-file /etc/named/zones.conf \
+-zone-dir /etc/named/zones/ \
+-bastion-addr jumphost.example.com \
+-bastion-user bastionUser \
+-bastion-port 22 \
+-bastion-key /home/bastionUser/.ssh/id_rsa \
+-target-user targetUser \
+-target-pass="pass,pass123" \
+-target-port="22,2222" \
+-target-key /home/targetUser/.ssh/id_rsa
 ```
