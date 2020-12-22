@@ -62,4 +62,4 @@ Bulk check (multi-line):
 -target-key /home/targetUser/.ssh/id_rsa
 ```
 ### Example 2
-single file check (one-liner):
+Single file check (one-liner):
