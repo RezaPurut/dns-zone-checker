@@ -42,6 +42,10 @@ go run main.go [flags]
 --target-key string        SSH private key path to connect target server. Provide private key path that is in the 
                            bastion server. 
 ```
+### Notes
+1. When using `target-*` parameter, assume that you are in the bastion host. So, the private key path 
+should be the path in bastion host not in the current server.
+
 ### Example 1
 Bulk check (one-liner):
 ```
@@ -78,3 +82,4 @@ Note: `bulk` default value is false, no need to provide it for one file check.
 any ip in the file. Feel free to modify `readFile(zone_dir, fn string)` function if you
 want to change how it should read the zone file.
 3. This tool can only read DNS forward zone file.
+4. For now, this tool can only check through a Bastion Server.
