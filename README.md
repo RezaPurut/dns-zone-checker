@@ -73,6 +73,16 @@ Single file check (one-liner):
 ```
 Single file check (multi-line):
 ```
+./checker \
+-bastion-addr jumphost.example.com \
+-bastion-user bastionUser \
+-bastion-port 22 \
+-bastion-key /home/bastionUser/.ssh/id_rsa \
+-target-user targetUser \
+-target-pass="pass,pass123" \
+-target-port="22,2222" \
+-target-key /home/targetUser/.ssh/id_rsa \
+-single-zone=/etc/named/zones/db.example.com
 ```
 Note: `bulk` default value is false, no need to provide it for one file check.
 
