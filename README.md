@@ -74,4 +74,6 @@ Note: `bulk` default value is false, no need to provide it for one file check.
 
 ## Limitations
 1. This tool can only check one ip address in a zone file.
-2. 
+2. This tool has been set to read up until 451 bytes of a zone file and find if there is
+any ip in the file. Feel free to modify `readFile(zone_dir, fn string)` function if you
+want to change how it should read the zone file.
