@@ -30,7 +30,7 @@ go run main.go [flags]
 --single-zone string       Use this only when you want to check one zone file. This is used when 
                            bulk=false or 'bulk' is not provided
 --bastion-addr string      Address or hostname of the bastion server
---bastion-key string       SSH private key path for bastion server
+--bastion-key string       SSH private key path to connect to bastion server
 --bastion-user string      Username to connect to bastion server
 --bastion-pass string      Password for the user to connect to bastion server
 --bastion-port string      SSH port to connect to bastion server
@@ -39,7 +39,8 @@ go run main.go [flags]
                            separated by comma (eg. "password,pass,abc"). It will try each of the provided password
                            to connect to the target server
 --target-port string       SSH port for target server. Can provide multiple values separated by comma (eg. "22,2222")
---target-key string        SSH private key path for target server 
+--target-key string        SSH private key path to connect target server. Provide private key path that is in the 
+                           bastion server. 
 ```
 ### Example 1
 Bulk check (one-liner):
@@ -69,6 +70,8 @@ Single file check (one-liner):
 Single file check (multi-line):
 ```
 ```
+Note: `bulk` default value is false, no need to provide it for one file check.
 
 ## Limitations
-
+1. This tool can only check one ip address in a zone file.
+2. 
