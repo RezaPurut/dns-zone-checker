@@ -66,3 +66,9 @@ Single file check (one-liner):
 ```
 ./checker -bastion-addr jumphost.example.com -bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser -target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa -single-zone=/etc/named/zones/db.example.com
 ```
+Single file check (multi-line):
+```
+```
+
+## Limitations
+
