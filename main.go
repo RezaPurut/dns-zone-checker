@@ -11,7 +11,8 @@ import (
 	"strings"
 	"time"
 	
-	"golang.org/x/crypto/ssh"	
+	"golang.org/x/crypto/ssh"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -29,14 +30,15 @@ func main() {
 		target_port string
 		target_key string
 		single_file string
-		
+		log_file string
 		bulk_check bool
 	)
 
 	flag.StringVar(&dns_file, "dns-file", "", "DNS configuration file")
 	flag.StringVar(&zone_dir, "zone-dir", "", "Zone file directory")
 
-	flag.StringVar(&bast_addr, "bastion-addr", "", "Server address or name for Bastion Host")
+	flag.StringVar(&bast_addr, "bastion-addr", "", "Server address or name for " +
+	    "Bastion Host")
 	flag.StringVar(&bast_user, "bastion-user", "", "Username for Bastion Host")
 	flag.StringVar(&bast_pass, "bastion-pass", "", "Password for Bastion Host")
 	flag.StringVar(&bast_port, "bastion-port", "", "Port for Bastion Host")
@@ -48,21 +50,35 @@ func main() {
 	flag.StringVar(&target_key, "target-key", "", "Private Key for Target Host")
 	
 	flag.BoolVar(&bulk_check, "bulk", false, "Enable Bulk Checking")
-	flag.StringVar(&single_file, "single-zone", "", "Zone file to check (only use this to check individual file)")
-
+	flag.StringVar(&single_file, "single-zone", "", "Zone file to check (only use this " + 
+		"to	check individual file)")
+	flag.StringVar(&log_file, "log-file", "/var/log/dns-check.txt", "Log file")
 	flag.Parse()
 
 	pass_list := strings.Split(target_pass, ",")
 	port_list := strings.Split(target_port, ",")
 
+	initializeLogging(log_file)
+
 	fmt.Println("Login to Bastion Host...")
-	bastionConn, err := sshConnect(bast_addr, bast_user, bast_pass, bast_key, bast_port)
+	log.WithFields(log.Fields{
+		"address": bast_addr,
+		"user": bast_user,
+	}).Info("Login to Bastion Host")
+		
+	bastionConn, err := sshConnect(bast_addr, bast_user, bast_pass, 
+		bast_key, bast_port)
 	
 	if err != nil {
 		fmt.Println(err)
+		log.WithFields(log.Fields{
+			"address": bast_addr,
+			"user": bast_user,
+		}).Error("Login to Bastion Host Failed: " + err.Error())
 	} else {
 		if bulk_check {
-			target_list := difference(getFileName(zone_dir), readFnameInConfig(zone_dir, dns_file))
+			target_list := difference(getFileName(zone_dir), 
+			readFnameInConfig(zone_dir, dns_file))
 
 			fmt.Println(target_list)
 			for i := range target_list {
@@ -71,14 +87,16 @@ func main() {
 				
 				fmt.Printf("SSHing on %s\n", target_addr)
 
-				attemptConnect(bastionConn, port_list, pass_list, target_user, target_key, target_addr)
+				attemptConnect(bastionConn, port_list, pass_list, target_user, 
+					target_key, target_addr)
 			}
 		} else {
 			fmt.Println("Reading File...")
 			target_addr := readFile(zone_dir, single_file)
 			fmt.Printf("SSHing on %s\n", target_addr)
 
-			attemptConnect(bastionConn, port_list, pass_list, target_user, target_key, target_addr)
+			attemptConnect(bastionConn, port_list, pass_list, target_user, 
+				target_key, target_addr)
 		}
 	}
 }
@@ -89,6 +107,15 @@ func check(err error) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+func initializeLogging(log_file string) {
+	file, err := os.OpenFile(log_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Println("Could not open log file: " + err.Error())
+	}
+
+	log.SetOutput(file)
 }
 
 func attemptConnect(bastionConn *ssh.Client, port_list, pass_list []string, target_user, target_key, target_addr string) {
