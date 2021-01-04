@@ -51,7 +51,7 @@ func main() {
 	
 	flag.BoolVar(&bulk_check, "bulk", false, "Enable Bulk Checking")
 	flag.StringVar(&single_file, "single-zone", "", "Zone file to check (only use this " + 
-		"to	check individual file)")
+		"to check individual file)")
 	flag.StringVar(&log_file, "log-file", "/var/log/dns-check.txt", "Log file")
 	flag.Parse()
 
