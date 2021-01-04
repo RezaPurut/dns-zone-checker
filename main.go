@@ -93,8 +93,11 @@ func main() {
 			}
 		} else {
 			fmt.Println("Reading File...")
+			log.WithField("file", single_file).Info("Read file")
+			
 			target_addr := readFile(zone_dir, single_file)
 			fmt.Printf("SSHing on %s\n", target_addr)
+			log.WithField("target", target_addr).Info("SSH target")
 
 			attemptConnect(bastionConn, port_list, pass_list, target_user, 
 				target_key, target_addr)
