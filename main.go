@@ -73,7 +73,7 @@ func main() {
 		log.WithFields(log.Fields{
 			"address": bast_addr,
 			"user": bast_user,
-		}).Error("Login to Bastion Host Failed: " + err.Error())
+		}).Error("Could not login to Bastion: " + err.Error())
 	} else {
 		if bulk_check {
 			target_list := difference(getFileName(zone_dir), 
@@ -85,8 +85,7 @@ func main() {
 				fmt.Printf("Checking file %s\n", target_list[i])
 				log.WithField("file", target_list[i]).Info("Checking file")
 				
-				fmt.Printf("SSHing on %s\n", target_addr)
-				log.WithField("target", target_addr).Info("SSH target")
+				fmt.Printf("SSHing %s\n", target_addr)
 
 				attemptConnect(bastionConn, port_list, pass_list, target_user, 
 					target_key, target_addr)
@@ -96,8 +95,7 @@ func main() {
 			log.WithField("file", single_file).Info("Read file")
 			
 			target_addr := readFile(zone_dir, single_file)
-			fmt.Printf("SSHing on %s\n", target_addr)
-			log.WithField("target", target_addr).Info("SSH target")
+			fmt.Printf("SSHing %s\n", target_addr)
 
 			attemptConnect(bastionConn, port_list, pass_list, target_user, 
 				target_key, target_addr)
@@ -125,18 +123,29 @@ func initializeLogging(log_file string) {
 func attemptConnect(bastionConn *ssh.Client, port_list, pass_list []string, target_user, target_key, target_addr string) {
 	
 	for j := range port_list {
-		fmt.Printf("Trying port %s\n", port_list[j])
+		fmt.Printf("Dialing target on port %s...\n", port_list[j])
 
 		for k := range pass_list {
+			log.WithFields(log.Fields{
+				"target": target_addr,
+				"port": port_list[j],
+			}).Info("Dialing target from Bastion")
 			// make new bastionConn every loop (if not, will get error handshake failed)
 			conn, err := bastionConn.Dial("tcp", target_addr + ":" + port_list[j])
 
-			fmt.Printf("Trying password %s\n", pass_list[k])
 			if err != nil {
-				fmt.Println("Connection from Bastion Failed: ", err)
+				fmt.Println("Dialing from Bastion Failed: ", err)
+				log.WithFields(log.Fields{
+					"target": target_addr,
+					"port": port_list[j],
+				}).Error("Unable to dial target: " + err.Error())
+				
+				break
 			} else {
 				
 				config := sshConfig(target_user, pass_list[k], target_key)
+
+				fmt.Printf("Trying password %s\n", pass_list[k])
 				ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + port_list[j], config)
 					
 				if err != nil {
