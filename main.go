@@ -37,8 +37,7 @@ func main() {
 	flag.StringVar(&dns_file, "dns-file", "", "DNS configuration file")
 	flag.StringVar(&zone_dir, "zone-dir", "", "Zone file directory")
 
-	flag.StringVar(&bast_addr, "bastion-addr", "", "Server address or name for " +
-	    "Bastion Host")
+	flag.StringVar(&bast_addr, "bastion-addr", "", "Server address or name for Bastion Host")
 	flag.StringVar(&bast_user, "bastion-user", "", "Username for Bastion Host")
 	flag.StringVar(&bast_pass, "bastion-pass", "", "Password for Bastion Host")
 	flag.StringVar(&bast_port, "bastion-port", "", "Port for Bastion Host")
@@ -84,8 +83,10 @@ func main() {
 			for i := range target_list {
 				target_addr := readFile(zone_dir, target_list[i])
 				fmt.Printf("Checking file %s\n", target_list[i])
+				log.WithField("file", target_list[i]).Info("Checking file")
 				
 				fmt.Printf("SSHing on %s\n", target_addr)
+				log.WithField("target", target_addr).Info("SSH target")
 
 				attemptConnect(bastionConn, port_list, pass_list, target_user, 
 					target_key, target_addr)
