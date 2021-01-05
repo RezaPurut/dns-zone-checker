@@ -146,13 +146,42 @@ func attemptConnect(bastionConn *ssh.Client, port_list, pass_list []string, targ
 				config := sshConfig(target_user, pass_list[k], target_key)
 
 				fmt.Printf("Trying password %s\n", pass_list[k])
+				log.WithFields(log.Fields{
+					"user": target_user,
+					"password": pass_list[k],
+					"port": port_list[j],
+					"key": target_key,
+				}).Info("New Client Connection started")
 				ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + port_list[j], config)
 					
 				if err != nil {
 					fmt.Println("newClientConn error: ", err)
+					log.WithFields(log.Fields{
+						"user": target_user,
+						"password": pass_list[k],
+						"port": port_list[j],
+						"key": target_key,
+					}).Error("newClientConn error: " + err.Error())
 				} else {
 					destClient := ssh.NewClient(ncc, chans, reqs)
-					sshSession(destClient)		
+					log.WithFields(log.Fields{
+						"user": target_user,
+						"password": pass_list[k],
+						"port": port_list[j],
+						"key": target_key,
+					}).Info("New client with these parameters successfully created")
+					err := sshSession(destClient)
+
+					if err != nil {
+						fmt.Println(err)
+					} else {
+						log.WithFields(log.Fields{
+							"user": target_user,
+							"password": pass_list[k],
+							"port": port_list[j],
+							"key": target_key,
+						}).Info("This is the correct param. Succeed")
+					}
 				}
 			}
 		}
@@ -206,7 +235,7 @@ func sshConnect(server, username, pass, key_path, port string) (*ssh.Client, err
 	return connection, err
 }
 
-func sshSession(conn *ssh.Client) {
+func sshSession(conn *ssh.Client) error {
 	session, err := conn.NewSession()
 
 	check(err)
@@ -222,6 +251,8 @@ func sshSession(conn *ssh.Client) {
 	go io.Copy(os.Stderr, sessStderr)
 
 	err = session.Run("ls -la")
+	
+	return err
 }
  
 // This function read the .conf file record line by line 
