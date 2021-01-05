@@ -1,5 +1,5 @@
 package main
-// TODO: commennt function, add logging, set successful output
+// TODO: comment function
 import (
 	"fmt"
 	"flag"
@@ -60,20 +60,14 @@ func main() {
 	initializeLogging(log_file)
 
 	fmt.Println("Login to Bastion Host...")
-	log.WithFields(log.Fields{
-		"address": bast_addr,
-		"user": bast_user,
-	}).Info("Login to Bastion Host")
-		
+	log.Info("Login to Bastion Host")
+
 	bastionConn, err := sshConnect(bast_addr, bast_user, bast_pass, 
 		bast_key, bast_port)
 	
 	if err != nil {
-		fmt.Println(err)
-		log.WithFields(log.Fields{
-			"address": bast_addr,
-			"user": bast_user,
-		}).Error("Could not login to Bastion: " + err.Error())
+		fmt.Println("Please check your bastion parameter", err)
+		log.Error("Could not login to Bastion: " + err.Error())
 	} else {
 		if bulk_check {
 			target_list := difference(getFileName(zone_dir), 
@@ -120,7 +114,8 @@ func initializeLogging(log_file string) {
 	log.SetOutput(file)
 }
 
-func attemptConnect(bastionConn *ssh.Client, port_list, pass_list []string, target_user, target_key, target_addr string) {
+func attemptConnect(bastionConn *ssh.Client, port_list, pass_list []string, target_user, 
+	target_key, target_addr string) {
 	
 	for j := range port_list {
 		fmt.Printf("Dialing target on port %s...\n", port_list[j])
@@ -135,12 +130,9 @@ func attemptConnect(bastionConn *ssh.Client, port_list, pass_list []string, targ
 
 			if err != nil {
 				fmt.Println("Dialing from Bastion Failed: ", err)
-				log.WithFields(log.Fields{
-					"target": target_addr,
-					"port": port_list[j],
-				}).Error("Unable to dial target: " + err.Error())
+				log.Error("Unable to dial target: " + err.Error())
 				
-				break
+				break //prevent dialing on same port
 			} else {
 				
 				config := sshConfig(target_user, pass_list[k], target_key)
@@ -152,28 +144,19 @@ func attemptConnect(bastionConn *ssh.Client, port_list, pass_list []string, targ
 					"port": port_list[j],
 					"key": target_key,
 				}).Info("New Client Connection started")
-				ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + port_list[j], config)
+				ncc, chans, reqs, err := ssh.NewClientConn(conn, target_addr + ":" + 
+				port_list[j], config)
 					
 				if err != nil {
 					fmt.Println("newClientConn error: ", err)
-					log.WithFields(log.Fields{
-						"user": target_user,
-						"password": pass_list[k],
-						"port": port_list[j],
-						"key": target_key,
-					}).Error("newClientConn error: " + err.Error())
+					log.Error("newClientConn error: " + err.Error())
 				} else {
 					destClient := ssh.NewClient(ncc, chans, reqs)
-					log.WithFields(log.Fields{
-						"user": target_user,
-						"password": pass_list[k],
-						"port": port_list[j],
-						"key": target_key,
-					}).Info("New client with these parameters successfully created")
+					log.Info("New client successfully created")
 					err := sshSession(destClient)
 
 					if err != nil {
-						fmt.Println(err)
+						fmt.Println("Cannot execute command", err)
 					} else {
 						log.WithFields(log.Fields{
 							"user": target_user,
