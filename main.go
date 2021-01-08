@@ -18,7 +18,8 @@ import (
 func main() {
 
 	var (
-		dns_file string
+		zone_file string
+		// dns_file string
 		zone_dir string
 		bast_addr string
 		bast_user string
@@ -31,10 +32,11 @@ func main() {
 		target_key string
 		single_file string
 		log_file string
-		bulk_check bool
+		// bulk_check bool
 	)
 
-	flag.StringVar(&dns_file, "dns-file", "", "DNS configuration file")
+	flag.StringVar(&zone_file, "zone-file", "", "Zone file/files")
+	// flag.StringVar(&dns_file, "dns-file", "", "DNS configuration file")
 	flag.StringVar(&zone_dir, "zone-dir", "", "Zone file directory")
 
 	flag.StringVar(&bast_addr, "bastion-addr", "", "Server address or name for Bastion Host")
@@ -48,12 +50,13 @@ func main() {
 	flag.StringVar(&target_port, "target-port", "", "Port for Target Host")
 	flag.StringVar(&target_key, "target-key", "", "Private Key for Target Host")
 	
-	flag.BoolVar(&bulk_check, "bulk", false, "Enable Bulk Checking")
+	// flag.BoolVar(&bulk_check, "bulk", false, "Enable Bulk Checking")
 	flag.StringVar(&single_file, "single-zone", "", "Zone file to check (only use this " + 
 		"to check individual file)")
 	flag.StringVar(&log_file, "log-file", "/var/log/dns-check.txt", "Log file")
 	flag.Parse()
 
+	file_list := strings.Split(zone_file, ",")
 	pass_list := strings.Split(target_pass, ",")
 	port_list := strings.Split(target_port, ",")
 
@@ -69,7 +72,16 @@ func main() {
 		fmt.Println("Please check your bastion parameter", err)
 		log.Error("Could not login to Bastion: " + err.Error())
 	} else {
-		if bulk_check {
+		for i := range(file_list) {
+			
+			target_addr := readFile(zone_dir, file_list[i])
+
+			fmt.Printf("SSHing %s\n", target_addr)
+
+			attemptConnect(bastionConn, port_list, pass_list, target_user, 
+				target_key, target_addr)
+		}
+		/* if bulk_check {
 			target_list := difference(getFileName(zone_dir), 
 			readFnameInConfig(zone_dir, dns_file))
 
@@ -93,7 +105,7 @@ func main() {
 
 			attemptConnect(bastionConn, port_list, pass_list, target_user, 
 				target_key, target_addr)
-		}
+		} */
 	}
 }
 
