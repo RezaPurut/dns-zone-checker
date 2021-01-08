@@ -1,11 +1,10 @@
 package main
-// TODO: comment function
+// TODO: comment function, create file check function
 import (
 	"fmt"
 	"flag"
 	"os"
 	"regexp"
-	"bufio"
 	"io/ioutil"
 	"io"
 	"strings"
@@ -18,7 +17,7 @@ import (
 func main() {
 
 	var (
-		dns_file string
+		zone_file string
 		zone_dir string
 		bast_addr string
 		bast_user string
@@ -29,12 +28,10 @@ func main() {
 		target_pass string
 		target_port string
 		target_key string
-		single_file string
 		log_file string
-		bulk_check bool
 	)
 
-	flag.StringVar(&dns_file, "dns-file", "", "DNS configuration file")
+	flag.StringVar(&zone_file, "zone-file", "", "Zone file/files")
 	flag.StringVar(&zone_dir, "zone-dir", "", "Zone file directory")
 
 	flag.StringVar(&bast_addr, "bastion-addr", "", "Server address or name for Bastion Host")
@@ -48,9 +45,6 @@ func main() {
 	flag.StringVar(&target_port, "target-port", "", "Port for Target Host")
 	flag.StringVar(&target_key, "target-key", "", "Private Key for Target Host")
 	
-	flag.BoolVar(&bulk_check, "bulk", false, "Enable Bulk Checking")
-	flag.StringVar(&single_file, "single-zone", "", "Zone file to check (only use this " + 
-		"to check individual file)")
 	flag.StringVar(&log_file, "log-file", "/var/log/dns-check.txt", "Log file")
 	flag.Parse()
 
@@ -69,30 +63,29 @@ func main() {
 		fmt.Println("Please check your bastion parameter", err)
 		log.Error("Could not login to Bastion: " + err.Error())
 	} else {
-		if bulk_check {
-			target_list := difference(getFileName(zone_dir), 
-			readFnameInConfig(zone_dir, dns_file))
 
-			fmt.Println(target_list)
-			for i := range target_list {
-				target_addr := readFile(zone_dir, target_list[i])
-				fmt.Printf("Checking file %s\n", target_list[i])
-				log.WithField("file", target_list[i]).Info("Checking file")
-				
+		if zone_dir != "" {
+
+			for file := range(getFileName(zone_dir)) {
+				target_addr := readFile(zone_dir, file)
+
+				fmt.Printf("Checking file %s\n", file)
 				fmt.Printf("SSHing %s\n", target_addr)
-
+	
 				attemptConnect(bastionConn, port_list, pass_list, target_user, 
 					target_key, target_addr)
 			}
-		} else {
-			fmt.Println("Reading File...")
-			log.WithField("file", single_file).Info("Read file")
 			
-			target_addr := readFile(zone_dir, single_file)
-			fmt.Printf("SSHing %s\n", target_addr)
-
-			attemptConnect(bastionConn, port_list, pass_list, target_user, 
-				target_key, target_addr)
+		} else {
+			file_list := strings.Split(zone_file, ",")
+			for file := range(file_list) {
+				target_addr := readFile(zone_dir, file_list[file])
+	
+				fmt.Printf("SSHing %s\n", target_addr)
+	
+				attemptConnect(bastionConn, port_list, pass_list, target_user, 
+					target_key, target_addr)
+			}
 		}
 	}
 }
@@ -237,43 +230,6 @@ func sshSession(conn *ssh.Client) error {
 	
 	return err
 }
- 
-// This function read the .conf file record line by line 
-// using regex to search for zones directory keyword until 
-// it finds a double quote ("). Then the search result is 
-// cleaned by removing the duplicated file name.
-func readFnameInConfig(zone_dir, dns_file string) []string {
-	f, err := os.Open(dns_file)
-	check(err)
-
-	defer f.Close()
-
-	keyword := strings.Split(zone_dir, "/")
-
-	scanner := bufio.NewScanner(f)
-
-	var m = make(map[string]bool)
-	var a = []string{}
-
-	// if user set zone_dir end with '/'
-	if keyword[len(keyword)-1] == "" {
-		keyword[len(keyword)-1] = keyword[len(keyword)-2]
-	}
-
-	r := regexp.MustCompile(keyword[len(keyword)-1] + "/(.*?)\"")
-	for scanner.Scan() {
-		fname := r.FindAllStringSubmatch(scanner.Text(), -1)
-		for _, v := range fname {
-			s := string(v[1])
-			if m[s] != true {
-				a = append(a, s)
-				m[s] = true			
-			}
-		}
-	}
-
-	return a
-}
 	
 func getFileName(zone_dir string) <-chan string {
 	ch := make(chan string)
@@ -287,22 +243,6 @@ func getFileName(zone_dir string) <-chan string {
 		close(ch)
 	}()
 	return ch
-}
-
-func difference(a<-chan string, b []string) []string {
-	mb := make(map[string]struct{}, len(b))
-	for _, i := range b {
-		mb[i] = struct{}{}
-	}
-
-	var diff []string
-	for i := range a {
-		if _, found := mb[i]; !found {
-			diff = append(diff, i)
-		}
-	}
-
-	return diff
 }
 
 func readFile(zone_dir, fn string) string {
