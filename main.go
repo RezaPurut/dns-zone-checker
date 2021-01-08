@@ -30,7 +30,7 @@ func main() {
 		target_pass string
 		target_port string
 		target_key string
-		single_file string
+		// single_file string
 		log_file string
 		// bulk_check bool
 	)
@@ -51,8 +51,8 @@ func main() {
 	flag.StringVar(&target_key, "target-key", "", "Private Key for Target Host")
 	
 	// flag.BoolVar(&bulk_check, "bulk", false, "Enable Bulk Checking")
-	flag.StringVar(&single_file, "single-zone", "", "Zone file to check (only use this " + 
-		"to check individual file)")
+	// flag.StringVar(&single_file, "single-zone", "", "Zone file to check (only use this " + 
+	// "to check individual file)")
 	flag.StringVar(&log_file, "log-file", "/var/log/dns-check.txt", "Log file")
 	flag.Parse()
 
@@ -72,15 +72,30 @@ func main() {
 		fmt.Println("Please check your bastion parameter", err)
 		log.Error("Could not login to Bastion: " + err.Error())
 	} else {
-		for i := range(file_list) {
+
+		if zone_dir != "" {
+
+			for file := range(getFileName(zone_dir)) {
+				target_addr := readFile(zone_dir, file)
+
+				fmt.Printf("Checking file %s\n", file)
+				fmt.Printf("SSHing %s\n", target_addr)
+	
+				attemptConnect(bastionConn, port_list, pass_list, target_user, 
+					target_key, target_addr)
+			}
 			
-			target_addr := readFile(zone_dir, file_list[i])
-
-			fmt.Printf("SSHing %s\n", target_addr)
-
-			attemptConnect(bastionConn, port_list, pass_list, target_user, 
-				target_key, target_addr)
+		} else {
+			for file := range(file_list) {
+				target_addr := readFile(zone_dir, file_list[file])
+	
+				fmt.Printf("SSHing %s\n", target_addr)
+	
+				attemptConnect(bastionConn, port_list, pass_list, target_user, 
+					target_key, target_addr)
+			}
 		}
+		
 		/* if bulk_check {
 			target_list := difference(getFileName(zone_dir), 
 			readFnameInConfig(zone_dir, dns_file))
