@@ -44,15 +44,14 @@ go run main.go [flags]
 should be the path in bastion host not in the current server.
 
 ### Example 1
-Bulk check (one-liner):
+Check zone files in a directory (one-liner):
 ```
-./checker -bulk=true -dns-file /etc/named/zones.conf -zone-dir /etc/named/zones/ -bastion-addr jumphost.example.com -bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser -target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa
+./checker -zone-dir /etc/named/zones/ -bastion-addr jumphost.example.com -bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser -target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa
 ```
 
-Bulk check (multi-line):
+Check zone files in a directory (multi-line):
 ```
-./checker -bulk=true \
--dns-file /etc/named/zones.conf \
+./checker \
 -zone-dir /etc/named/zones/ \
 -bastion-addr jumphost.example.com \
 -bastion-user bastionUser \
@@ -66,7 +65,7 @@ Bulk check (multi-line):
 ### Example 2
 Single file check (one-liner):
 ```
-./checker -bastion-addr jumphost.example.com -bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser -target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa -single-zone=/etc/named/zones/db.example.com
+./checker -bastion-addr jumphost.example.com -bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser -target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa -zone-file=/etc/named/zones/db.example.com
 ```
 Single file check (multi-line):
 ```
@@ -79,9 +78,8 @@ Single file check (multi-line):
 -target-pass="pass,pass123" \
 -target-port="22,2222" \
 -target-key /home/targetUser/.ssh/id_rsa \
--single-zone=/etc/named/zones/db.example.com
+-zone-file=/etc/named/zones/db.example.com
 ```
-Note: `bulk` default value is false, no need to provide it for one file check.
 
 ## Limitations
 1. This tool can only check one ip address in each zone file.
