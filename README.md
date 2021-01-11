@@ -1,5 +1,5 @@
 # dns-zone-checker
-Simple tool to read DNS forward zone file, compare it with DNS config file and ssh into the server. It is designed to read the file from current host/DNS server. Then, it will use Bastion server as a jump host to ssh into target server. This tool is used to check whether a server is still available or not.
+Simple tool to read DNS forward zone file and ssh into the server. It is designed to read the file from current host/DNS server. Then, it will use Bastion server as a jump host to ssh into target server. This tool is used to check whether a server is still available or not.
 
 ```
                        ----------         -------------        -------------------
@@ -21,14 +21,10 @@ go run main.go [flags]
 ```
 ### Options
 ```
---bulk boolean             If this option is enabled, it will compare all files in zones directory 
-                           with DNS configuration file
 --dns-file string          DNS configuration file to read and compare. Specifies the DNS config file 
                            (eg. named.conf, named.conf.default-zones, zones.conf, etc.)
 --zone-dir string          Zone files directory. Specifies the directory that contains the zone files 
                            such as example.com.zone, db.example.com)
---single-zone string       Use this only when you want to check one zone file. This is used when 
-                           bulk=false or 'bulk' is not provided
 --bastion-addr string      Address or hostname of the bastion server
 --bastion-key string       SSH private key path to connect to bastion server
 --bastion-user string      Username to connect to bastion server
@@ -87,9 +83,9 @@ Single file check (multi-line):
 Note: `bulk` default value is false, no need to provide it for one file check.
 
 ## Limitations
-1. This tool can only check one ip address in a zone file.
+1. This tool can only check one ip address in each zone file.
 2. This tool has been set to read up until 451 bytes of a zone file and find if there is
-any ip in the file. Feel free to modify `readFile(zone_dir, fn string)` function if you
+any ip address until that range. Feel free to modify `readFile(zone_dir, fn string)` function if you
 want to change how it should read the zone file.
 3. This tool can only read DNS forward zone file.
 4. For now, this tool can only check through a Bastion Server.
