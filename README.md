@@ -44,7 +44,7 @@ go run main.go [flags]
 should be the path in bastion host not in the current server.
 
 ### Example 1
-Check zone files in a directory (one-liner):
+Check zone files in a directory (one-line):
 ```
 ./checker -zone-dir /etc/named/zones/ -bastion-addr jumphost.example.com -bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser -target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa
 ```
@@ -63,7 +63,7 @@ Check zone files in a directory (multi-line):
 -target-key /home/targetUser/.ssh/id_rsa
 ```
 ### Example 2
-Single file check (one-liner):
+Single file check (one-line):
 ```
 ./checker -bastion-addr jumphost.example.com -bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser -target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa -zone-file=/etc/named/zones/db.example.com
 ```
@@ -79,6 +79,24 @@ Single file check (multi-line):
 -target-port="22,2222" \
 -target-key /home/targetUser/.ssh/id_rsa \
 -zone-file=/etc/named/zones/db.example.com
+```
+### Example 3
+Multiple file check (one-line):
+```
+./checker -bastion-addr jumphost.example.com -bastion-user bastionUser -bastion-port 22 -bastion-key /home/bastionUser/.ssh/id_rsa -target-user targetUser -target-pass="pass,pass123" -target-port="22,2222" -target-key /home/targetUser/.ssh/id_rsa -zone-file="/etc/named/zones/db.example.com,/etc/named/zones/db.foo.com,/etc/named/zones/example.com.zone"
+```
+Multiple file check (multi-line):
+```
+./checker \
+-bastion-addr jumphost.example.com \
+-bastion-user bastionUser \
+-bastion-port 22 \
+-bastion-key /home/bastionUser/.ssh/id_rsa \
+-target-user targetUser \
+-target-pass="pass,pass123" \
+-target-port="22,2222" \
+-target-key /home/targetUser/.ssh/id_rsa \
+-zone-file="/etc/named/zones/db.example.com,/etc/named/zones/db.foo.com,/etc/named/zones/example.com.zone"
 ```
 
 ## Limitations
