@@ -21,10 +21,11 @@ go run main.go [flags]
 ```
 ### Options
 ```
---dns-file string          DNS configuration file to read and compare. Specifies the DNS config file 
-                           (eg. named.conf, named.conf.default-zones, zones.conf, etc.)
---zone-dir string          Zone files directory. Specifies the directory that contains the zone files 
-                           such as example.com.zone, db.example.com)
+--zone-file string         Specifies the zone file/files you want to check (eg. example.com.zone, 
+                           db.example.com). Can provide multiple values separated by comma 
+                           (eg. "example.com.zone,db.example.com").
+--zone-dir string          Zone files directory. Specifies the directory that contains the zone files.
+                           This is used when you want to check a directory of zone files.
 --bastion-addr string      Address or hostname of the bastion server
 --bastion-key string       SSH private key path to connect to bastion server
 --bastion-user string      Username to connect to bastion server
