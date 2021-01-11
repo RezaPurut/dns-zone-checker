@@ -8,6 +8,16 @@ Simple tool to read DNS forward zone file and ssh into the server. It is designe
                        -        -         -           -        -                 -
                        ----------         -------------        -------------------
 ```
+<p align="center">
+  <img src="zone_chcker.png" />
+</p>
+
+1. Login to Bastion host.
+2. Read the zone directory/files and fetch the ip address.
+3. Send the ip address to Bastion host.
+4. Bastion host login to the address.
+5. If connected, execute command on target host.
+
 ## Usage
 As binary:
 ```
